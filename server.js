@@ -27,17 +27,33 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files (HTML, CSS, JS)
-// For Vercel: explicitly serve CSS and JS files
-app.use(express.static(path.join(__dirname, '.'), {
+// Serve static files (HTML, CSS, JS, images, etc)
+app.use(express.static(path.join(__dirname), {
     setHeaders: (res, filePath) => {
+        // Set proper MIME types for CSS and JS
         if (filePath.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
         } else if (filePath.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        } else if (filePath.endsWith('.html')) {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
         }
-    }
+        // Add cache control
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+    },
+    maxAge: '1h'
 }));
+
+// Explicitly serve CSS and JS files
+app.get('/style.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'style.css'));
+});
+
+app.get('/script.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'script.js'));
+});
 
 // ===========================
 // DATABASE CONNECTION

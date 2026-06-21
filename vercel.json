@@ -8,28 +8,29 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
       "src": "/script.js",
-      "dest": "/script.js"
+      "dest": "server.js",
+      "methods": ["GET"]
     },
     {
       "src": "/style.css",
-      "dest": "/style.css"
+      "dest": "server.js",
+      "methods": ["GET"]
     },
     {
-      "src": "/models/(.*)",
-      "dest": "/models/$1"
+      "src": "/index.html",
+      "dest": "server.js",
+      "methods": ["GET"]
     },
     {
-      "src": "/routes/(.*)",
-      "dest": "/routes/$1"
+      "src": "/admin.html",
+      "dest": "server.js",
+      "methods": ["GET"]
     },
     {
-      "src": ".*\\.html$",
-      "dest": "server.js"
+      "src": "/api/.*",
+      "dest": "server.js",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
     },
     {
       "src": "/(.*)",
