@@ -28,7 +28,16 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname, '.')));
+// For Vercel: explicitly serve CSS and JS files
+app.use(express.static(path.join(__dirname, '.'), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
 
 // ===========================
 // DATABASE CONNECTION
