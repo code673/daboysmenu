@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Daboy's Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page">
+    <div class="admin-container">
+        <!-- Header -->
+        <header class="admin-header">
+            <h1>🔧 Admin Panel</h1>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-secondary">← Back to Menu</a>
+            </div>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="switchTab('products')">📦 Products</button>
+            <button class="tab-btn" onclick="switchTab('orders')">📋 Customer Orders</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-content" id="productsTab">
+            <!-- Left Section: Add/Edit Product Form -->
+            <section class="admin-form-section">
+                <h2>Add / Edit Product</h2>
+                <form id="productForm" class="product-form">
+                    <input type="hidden" id="productId" value="">
+
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input type="text" id="productName" placeholder="e.g., Iced Coffee" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Category *</label>
+                        <select id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="beverages">Beverages</option>
+                            <option value="snacks">Snacks</option>
+                            <option value="desserts">Desserts</option>
+                            <option value="meals">Meals</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productPrice">Price ($) *</label>
+                        <input type="number" id="productPrice" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productQuantity">Quantity in Stock *</label>
+                        <input type="number" id="productQuantity" placeholder="0" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" placeholder="Optional description..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productImage">Product Image</label>
+                        <input type="file" id="productImage" accept="image/*">
+                        <small>Recommended: Square image (500x500px or larger)</small>
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Add Product</button>
+                        <button type="reset" class="btn btn-secondary" onclick="resetForm()">Clear Form</button>
+                    </div>
+                </form>
+
+                <div id="formMessage" class="message-box" style="display: none;"></div>
+            </section>
+
+            <!-- Right Section: Products List -->
+            <section class="admin-products-section">
+                <h2>Products List</h2>
+                <div class="search-bar">
+                    <input type="text" id="searchProducts" placeholder="Search products...">
+                </div>
+                <div id="adminProductsList" class="admin-products-list">
+                    <div class="loading">Loading products...</div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="admin-content" id="ordersTab" style="display: none;">
+            <section class="admin-orders-section" style="grid-column: 1 / -1;">
+                <h2>Customer Orders</h2>
+                <div class="orders-filter">
+                    <input type="text" id="searchOrders" placeholder="Search by customer name...">
+                </div>
+                <div id="ordersContainer" class="orders-list">
+                    <div class="loading">Loading orders...</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize admin panel on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminProducts();
+            setupAdminForm();
+            // Set products tab as active by default
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        });
+    </script>
+</body>
+</html>
