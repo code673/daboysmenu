@@ -322,6 +322,18 @@ body {
     background: #2980b9;
 }
 
+.btn-success {
+    background: #27ae60;
+    color: white;
+    padding: 8px 15px;
+    font-size: 0.85em;
+    margin-right: 8px;
+}
+
+.btn-success:hover {
+    background: #229954;
+}
+
 /* ===========================
    ADMIN PAGE STYLES
    =========================== */
@@ -785,6 +797,25 @@ body {
     color: #667eea !important;
     font-weight: 600 !important;
     margin-top: 5px;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.order-actions button {
+    padding: 8px 15px;
+    font-size: 0.85em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
 /* ===========================
