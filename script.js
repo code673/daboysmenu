@@ -459,7 +459,7 @@ function updateTotal() {
 /**
  * Submit purchase order
  */
-function submitPurchase(event) {
+async function submitPurchase(event) {
     event.preventDefault();
 
     const customerName = document.getElementById('customerName').value.trim();
@@ -493,13 +493,13 @@ function submitPurchase(event) {
     saveOrder(order);
 
     // Update product quantity
-    updateProductQuantity(currentProduct._id || currentProduct.id, quantity);
+    await updateProductQuantity(currentProduct._id || currentProduct.id, quantity);
 
     alert('Order placed successfully! Thank you for your purchase.');
     closeModal();
 
     // Reload products to reflect updated quantities
-    loadCustomerMenu();
+    await loadCustomerMenu();
 }
 
 /**
@@ -524,7 +524,47 @@ function getOrders() {
 /**
  * Update product quantity after purchase
  */
-function updateProductQuantity(productId, quantityBought) {
+async function updateProductQuantity(productId, quantityBought) {
+    if (USE_API) {
+        // Update via API
+        try {
+            const products = await getProducts();
+            const product = products.find(p => p._id === productId);
+            if (product) {
+                const newQuantity = product.quantity - quantityBought;
+                const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: product.name,
+                        category: product.category,
+                        price: product.price,
+                        quantity: newQuantity,
+                        description: product.description,
+                        image: product.image
+                    })
+                });
+                if (!response.ok) {
+                    console.error('Failed to update product quantity via API');
+                    // Fallback to localStorage
+                    updateProductQuantityLocal(productId, quantityBought);
+                }
+            }
+        } catch (error) {
+            console.error('API Error updating quantity:', error);
+            // Fallback to localStorage
+            updateProductQuantityLocal(productId, quantityBought);
+        }
+    } else {
+        // Update localStorage
+        updateProductQuantityLocal(productId, quantityBought);
+    }
+}
+
+/**
+ * Update product quantity in localStorage (helper function)
+ */
+function updateProductQuantityLocal(productId, quantityBought) {
     const products = getProductsFromStorage();
     const productIndex = products.findIndex(p => p._id === productId || p.id === productId);
     if (productIndex !== -1) {
