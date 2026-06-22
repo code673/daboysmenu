@@ -1,7 +1,7 @@
 /* ===========================
    GLOBAL CONFIG & CONSTANTS
    =========================== */
-const API_BASE_URL = 'http://localhost:5000/api'; // Change to deployed backend URL later (e.g., https://yourvercelapp.com/api)
+const API_BASE_URL = 'https://daboysmenu-6mev.vercel.app'; // Change to deployed backend URL later (e.g., https://yourvercelapp.com/api)
 const STORAGE_KEY = 'daboy_menu_products'; // localStorage key for offline mode (fallback)
 const ORDERS_STORAGE_KEY = 'daboy_customer_orders'; // localStorage key for customer orders
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB max image size
