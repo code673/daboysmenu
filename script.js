@@ -1,7 +1,7 @@
 /* ===========================
    GLOBAL CONFIG & CONSTANTS
    =========================== */
-const API_BASE_URL = 'daboysmenu.vercel.app/api'; // Change to deployed backend URL later (e.g., https://yourvercelapp.com/api)
+const API_BASE_URL = 'https://daboysmenu.vercel.app/api'; // Change to deployed backend URL later (e.g., https://yourvercelapp.com/api)
 const STORAGE_KEY = 'daboy_menu_products'; // localStorage key for offline mode (fallback)
 const ORDERS_STORAGE_KEY = 'daboy_customer_orders'; // localStorage key for customer orders
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB max image size
@@ -571,9 +571,43 @@ function displayOrders(orders) {
                         <span class="order-total"><strong>Total:</strong> ${formatPrice(order.totalPrice)}</span>
                     </div>
                 </div>
+                <div class="order-actions">
+                    ${order.status === 'pending' ? `<button class="btn btn-success" onclick="completeOrder('${order.id}')">✓ Complete</button>` : '<span style="color: green; font-weight: bold;">✓ Completed</span>'}
+                    <button class="btn btn-danger" onclick="deleteOrder('${order.id}')">🗑️ Delete</button>
+                </div>
             </div>
         `;
     }).join('');
+}
+
+/**
+ * Mark order as complete
+ */
+function completeOrder(orderId) {
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(o => o.id === orderId);
+    
+    if (orderIndex !== -1) {
+        orders[orderIndex].status = 'completed';
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+        showMessage('Order marked as complete!', 'success');
+        loadAdminOrders();
+    } else {
+        showMessage('Order not found', 'error');
+    }
+}
+
+/**
+ * Delete order
+ */
+function deleteOrder(orderId) {
+    if (confirm('Are you sure you want to delete this order?')) {
+        const orders = getOrders();
+        const filtered = orders.filter(o => o.id !== orderId);
+        localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(filtered));
+        showMessage('Order deleted successfully!', 'success');
+        loadAdminOrders();
+    }
 }
 
 /**
