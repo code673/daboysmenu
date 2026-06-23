@@ -638,15 +638,79 @@ function completeOrder(orderId) {
 }
 
 /**
+ * Restore product quantity when deleting pending orders
+ */
+async function restoreProductQuantity(productId, quantity) {
+    if (USE_API) {
+        // Update via API
+        try {
+            const products = await getProducts();
+            const product = products.find(p => p._id === productId);
+            if (product) {
+                const newQuantity = product.quantity + quantity; // Restore quantity
+                const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: product.name,
+                        category: product.category,
+                        price: product.price,
+                        quantity: newQuantity,
+                        description: product.description,
+                        image: product.image
+                    })
+                });
+                if (!response.ok) {
+                    console.error('Failed to restore product quantity via API');
+                    // Fallback to localStorage
+                    restoreProductQuantityLocal(productId, quantity);
+                }
+            }
+        } catch (error) {
+            console.error('API Error restoring quantity:', error);
+            // Fallback to localStorage
+            restoreProductQuantityLocal(productId, quantity);
+        }
+    } else {
+        // Update localStorage
+        restoreProductQuantityLocal(productId, quantity);
+    }
+}
+
+/**
+ * Restore product quantity in localStorage (helper function)
+ */
+function restoreProductQuantityLocal(productId, quantity) {
+    const products = getProductsFromStorage();
+    const productIndex = products.findIndex(p => p._id === productId || p.id === productId);
+    if (productIndex !== -1) {
+        products[productIndex].quantity += quantity;
+        saveProductsToStorage(products);
+    }
+}
+
+/**
  * Delete order
  */
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
     if (confirm('Are you sure you want to delete this order?')) {
         const orders = getOrders();
+        const order = orders.find(o => o.id === orderId);
+        
+        if (order && order.status === 'pending') {
+            // Restore product quantity if order is still pending
+            await restoreProductQuantity(order.productId, order.quantity);
+        }
+        
         const filtered = orders.filter(o => o.id !== orderId);
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(filtered));
-        showMessage('Order deleted successfully!', 'success');
+        showMessage('Order deleted successfully! ' + (order && order.status === 'pending' ? 'Stock has been restored.' : ''), 'success');
         loadAdminOrders();
+        
+        // Reload customer menu to update quantities
+        if (document.getElementById('productsContainer')) {
+            await loadCustomerMenu();
+        }
     }
 }
 
@@ -769,6 +833,38 @@ function loadSampleProducts() {
     if (localStorage.getItem(STORAGE_KEY) === null) {
         saveProductsToStorage(sampleProducts);
     }
+}
+
+/**
+ * Reset admin form and clear image data
+ */
+function resetForm() {
+    const form = document.getElementById('productForm');
+    const imageInput = document.getElementById('productImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (form) {
+        form.reset();
+    }
+    
+    // Clear image data
+    if (imageInput) {
+        imageInput.value = '';
+        delete imageInput.dataset.base64;
+    }
+    
+    // Clear image preview
+    if (imagePreview) {
+        imagePreview.innerHTML = '';
+    }
+    
+    // Reset form to add mode
+    if (submitBtn) {
+        submitBtn.textContent = 'Add Product';
+    }
+    
+    document.getElementById('productId').value = '';
 }
 
 // ===========================
