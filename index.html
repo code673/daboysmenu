@@ -4,31 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daboy's Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>🍽️ Daboy's Menu</h1>
-            <p class="subtitle">Fresh & Delicious</p>
+            <div class="header-content">
+                <h1>Daboy's</h1>
+                <p class="tagline">Culinary Excellence</p>
+            </div>
         </header>
 
         <!-- Category Filter -->
         <div class="filter-section">
-            <h3>Filter by Category</h3>
+            <div class="filter-header">
+                <h3>Browse Our Menu</h3>
+                <p class="filter-subtitle">Select a category</p>
+            </div>
             <div class="category-filters">
-                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn active" data-category="all">All Items</button>
                 <button class="filter-btn" data-category="beverages">Beverages</button>
                 <button class="filter-btn" data-category="snacks">Snacks</button>
                 <button class="filter-btn" data-category="desserts">Desserts</button>
-                <button class="filter-btn" data-category="meals">Meals</button>
+                <button class="filter-btn" data-category="meals">Main Courses</button>
             </div>
         </div>
 
         <!-- Products Grid -->
         <div class="products-section">
-            <h2>Available Products</h2>
             <div class="products-grid" id="productsContainer">
                 <!-- Products will be loaded here by JavaScript -->
                 <div class="loading">Loading products...</div>
