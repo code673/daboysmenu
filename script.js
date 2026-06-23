@@ -308,6 +308,7 @@ async function submitProduct() {
             showMessage('Product added successfully!', 'success');
         }
 
+        // Reset form and reload displays immediately
         resetForm();
         await loadAdminProducts();
 
@@ -369,9 +370,9 @@ async function deleteProduct(productId) {
                 saveProductsToStorage(filtered);
             }
             showMessage('Product deleted successfully!', 'success');
+            
+            // Reload both admin and customer views immediately
             await loadAdminProducts();
-
-            // Reload customer menu if it's open
             if (document.getElementById('productsContainer')) {
                 await loadCustomerMenu();
             }
@@ -495,11 +496,13 @@ async function submitPurchase(event) {
     // Update product quantity
     await updateProductQuantity(currentProduct._id || currentProduct.id, quantity);
 
-    alert('Order placed successfully! Thank you for your purchase.');
+    // Close modal first
     closeModal();
 
-    // Reload products to reflect updated quantities
+    // Reload products to reflect updated quantities immediately
     await loadCustomerMenu();
+
+    alert('Order placed successfully! Thank you for your purchase.');
 }
 
 /**
@@ -623,7 +626,7 @@ function displayOrders(orders) {
 /**
  * Mark order as complete
  */
-function completeOrder(orderId) {
+async function completeOrder(orderId) {
     const orders = getOrders();
     const orderIndex = orders.findIndex(o => o.id === orderId);
     
@@ -632,6 +635,12 @@ function completeOrder(orderId) {
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
         showMessage('Order marked as complete!', 'success');
         loadAdminOrders();
+        
+        // Reload products and menu for real-time updates
+        await loadAdminProducts();
+        if (document.getElementById('productsContainer')) {
+            await loadCustomerMenu();
+        }
     } else {
         showMessage('Order not found', 'error');
     }
@@ -705,7 +714,10 @@ async function deleteOrder(orderId) {
         const filtered = orders.filter(o => o.id !== orderId);
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(filtered));
         showMessage('Order deleted successfully! ' + (order && order.status === 'pending' ? 'Stock has been restored.' : ''), 'success');
+        
+        // Reload everything for real-time updates
         loadAdminOrders();
+        await loadAdminProducts();
         
         // Reload customer menu to update quantities
         if (document.getElementById('productsContainer')) {
